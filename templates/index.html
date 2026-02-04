@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis">Skincare Routine Tracker</h1>
+    
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">
+            Welcome to your personal skincare tracker. Build morning and evening routines,
+            save your favorite products, and see which brands show up most in your routine.
+        </p>
+        
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/register_page" class="btn btn-primary btn-lg px-4 gap-3">Get Started (Register)</a>
+            <a href="/login_page" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
+        </div>
+    </div>
+</div>
+
+<div class="container px-4 py-5" id="featured-3">
+    <h2 class="pb-2 border-bottom">What You Can Do</h2>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        
+        <div class="feature col">
+            <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mb-3 p-3" style="width: fit-content;">
+                01
+            </div>
+            <h2>Product Catalog</h2>
+            <p>Add and manage skincare products with full CRUD controls. Keep a clean, searchable catalog of everything you use.</p>
+            <a href="/products_page" class="icon-link">
+                Open catalog
+            </a>
+        </div>
+
+        <div class="feature col">
+            <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mb-3 p-3" style="width: fit-content;">
+                02
+            </div>
+            <h2>My Routines</h2>
+            <p>Create routines for different times of day and manage steps with flexible product selection.</p>
+            <a href="/routines_page" class="icon-link">
+                Manage routines
+            </a>
+        </div>
+
+        <div class="feature col">
+            <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mb-3 p-3" style="width: fit-content;">
+                03
+            </div>
+            <h2>Analytics</h2>
+            <p>See the top brands in your routine with fast aggregation statistics.</p>
+            <a href="/stats_page" class="icon-link">
+                View analytics
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

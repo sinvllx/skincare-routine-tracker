@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skincare Routine Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-1: #fdf1f6;
+            --bg-2: #ffeaf2;
+            --ink: #2b1f2a;
+            --muted: #6b5a66;
+            --accent: #e88bb7;
+            --accent-2: #f7b7d2;
+            --card: #ffffff;
+            --stroke: rgba(55, 25, 45, 0.08);
+            --shadow: 0 18px 50px rgba(75, 30, 55, 0.14);
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
+        body {
+            padding-top: 20px;
+            min-height: 100vh;
+            font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: var(--ink);
+            background: linear-gradient(160deg, var(--bg-1), var(--bg-2));
+        }
+
+        .page-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(680px 380px at 10% 10%, rgba(247, 183, 210, 0.55), transparent 60%),
+                radial-gradient(520px 420px at 90% 5%, rgba(232, 139, 183, 0.35), transparent 60%),
+                radial-gradient(760px 480px at 20% 90%, rgba(255, 224, 236, 0.7), transparent 60%);
+            filter: blur(0.3px);
+        }
+
+        .page-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1, h2, h3, h4, h5, h6, .navbar-brand {
+            font-family: "Fraunces", "Times New Roman", serif;
+            letter-spacing: 0.2px;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+
+        .navbar .nav-link {
+            color: var(--ink);
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 8px 14px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus {
+            background: rgba(232, 139, 183, 0.16);
+            color: var(--accent);
+        }
+
+        .navbar .nav-link.text-danger {
+            color: #b14848;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--stroke);
+            font-weight: 600;
+        }
+
+        .btn {
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            padding: 10px 18px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e88bb7, #f3a5ca);
+            border: none;
+            box-shadow: 0 12px 25px rgba(232, 139, 183, 0.28);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: linear-gradient(135deg, #d977a5, #ee96c1);
+        }
+
+        .bg-primary {
+            background: linear-gradient(135deg, #e88bb7, #f3a5ca) !important;
+        }
+
+        .border-primary {
+            border-color: rgba(232, 139, 183, 0.5) !important;
+        }
+
+        .text-primary {
+            color: var(--accent) !important;
+        }
+
+        .btn-outline-secondary {
+            border-color: rgba(26, 27, 31, 0.2);
+            color: var(--ink);
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus {
+            background: rgba(26, 27, 31, 0.06);
+            color: var(--ink);
+        }
+
+        .btn-success {
+            background: #f7b7d2;
+            border: none;
+            color: #4a2a3a;
+        }
+
+        .btn-success:hover,
+        .btn-success:focus {
+            background: #f2a5c7;
+            color: #4a2a3a;
+        }
+
+        .btn-outline-danger {
+            border-color: rgba(177, 72, 72, 0.5);
+            color: #b14848;
+        }
+
+        .btn-outline-danger:hover,
+        .btn-outline-danger:focus {
+            background: rgba(177, 72, 72, 0.1);
+            color: #b14848;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(26, 27, 31, 0.12);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(232, 139, 183, 0.6);
+            box-shadow: 0 0 0 0.2rem rgba(232, 139, 183, 0.18);
+        }
+
+        .badge.bg-secondary {
+            background: rgba(232, 139, 183, 0.16) !important;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .alert-info {
+            border: 1px solid rgba(232, 139, 183, 0.25);
+            background: rgba(232, 139, 183, 0.08);
+            color: var(--muted);
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, rgba(232, 139, 183, 0.25), rgba(247, 183, 210, 0.55));
+            color: var(--ink);
+            border-radius: 16px;
+        }
+
+        .table {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .table thead {
+            background: rgba(232, 139, 183, 0.12);
+        }
+
+        .progress {
+            background: rgba(26, 27, 31, 0.08);
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #e88bb7, #f3a5ca);
+        }
+
+        .list-group-item {
+            border: 1px solid rgba(26, 27, 31, 0.08);
+        }
+
+        .text-muted {
+            color: var(--muted) !important;
+        }
+
+        .icon-link {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .icon-link:hover,
+        .icon-link:focus {
+            color: #d977a5;
+        }
+
+        .spinner-border.text-primary {
+            color: var(--accent) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-bg" aria-hidden="true"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-light mb-4 container">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">SkinTracker</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="/products_page">Product Catalog</a>
+                    
+                    <a class="nav-link" href="/routines_page">My Routines</a>
+                    <a class="nav-link" href="/stats_page">Analytics</a>
+                </div>
+                
+                <div class="navbar-nav">
+                    <a class="nav-link" href="/login_page" id="loginLink">Login</a>
+                    <a class="nav-link" href="/register_page" id="registerLink">Register</a>
+                    <a class="nav-link text-danger" href="#" onclick="logout()" id="logoutLink" style="display:none;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container page-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Проверяем, есть ли токен в localStorage
+        const token = localStorage.getItem('token');
+        const userEmail = localStorage.getItem('user_email');
+
+        const loginLink = document.getElementById('loginLink');
+        const registerLink = document.getElementById('registerLink');
+        const logoutLink = document.getElementById('logoutLink');
+
+        if (token && userEmail) {
+            // Если пользователь вошел:
+            // 1. Скрываем кнопки входа/регистрации
+            if(loginLink) loginLink.style.display = 'none';
+            if(registerLink) registerLink.style.display = 'none';
+            
+            // 2. Показываем кнопку выхода
+            if(logoutLink) {
+                logoutLink.style.display = 'block';
+                logoutLink.textContent = `Logout (${userEmail})`; // Показываем email юзера
+            }
+        }
+
+        // Функция выхода
+        function logout() {
+            // Удаляем данные из хранилища браузера
+            localStorage.removeItem('token');
+            localStorage.removeItem('user_email');
+            
+            // Перенаправляем на главную
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

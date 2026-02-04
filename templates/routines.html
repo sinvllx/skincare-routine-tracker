@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>My Routines (Hybrid Input)</h2>
+        <div class="alert alert-info small">
+            You can pick a product from the catalog (recommended) or add a custom item manually.
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">Create a New Routine</h5>
+        <div class="input-group">
+            <input type="text" id="newRoutineName" class="form-control" placeholder="Routine name (e.g., Morning Care)">
+            <button class="btn btn-primary" onclick="createRoutine()">Create</button>
+        </div>
+    </div>
+</div>
+
+<div id="routinesContainer">
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const userEmail = localStorage.getItem('user_email');
+    if (!userEmail) window.location.href = '/login_page';
+
+    let availableProducts = [];
+
+    // --- 1. Init ---
+    async function init() {
+        await loadAllProducts();
+        await loadRoutines();
+    }
+
+    async function loadAllProducts() {
+        try {
+            const res = await fetch('/products');
+            if (res.ok) availableProducts = await res.json();
+        } catch (e) { console.error(e); }
+    }
+
+    // --- 2. Load routines ---
+    async function loadRoutines() {
+        try {
+            const response = await fetch(`/routines/${userEmail}`);
+            const routines = await response.json();
+            const container = document.getElementById('routinesContainer');
+            
+            if (routines.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">No routines yet. Create your first one.</p>';
+                return;
+            }
+
+            let productOptions = '<option value="">-- Choose from catalog --</option>';
+            if (availableProducts.length > 0) {
+                productOptions += availableProducts.map(p => 
+                    `<option value="${p.brand}|||${p.name}">${p.brand} - ${p.name}</option>`
+                ).join('');
+            }
+
+            container.innerHTML = routines.map(routine => `
+                <div class="card mb-4 shadow-sm border-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between">
+                        <span class="fw-bold">${routine.name}</span>
+                        <small>ID: ${routine.id}</small>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group mb-3">
+                            ${routine.products.length > 0 ? routine.products.map(p => `
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>${p.brand} - ${p.name}</span>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="removeStep('${routine.id}', '${p.name}')">&times;</button>
+                                </li>
+                            `).join('') : '<li class="list-group-item text-muted small">No steps yet</li>'}
+                        </ul>
+
+                        <div class="card bg-light border-0">
+                            <div class="card-body p-2">
+                                <label class="small fw-bold text-muted mb-1">Add a step:</label>
+                                
+                                <select id="select-${routine.id}" class="form-select form-select-sm mb-2">
+                                    ${productOptions}
+                                </select>
+                                
+                                <div class="text-center text-muted small mb-2">- OR MANUAL -</div>
+
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="brand-${routine.id}" class="form-control" placeholder="Brand">
+                                    <input type="text" id="name-${routine.id}" class="form-control" placeholder="Product name">
+                                    <button class="btn btn-success" onclick="addStep('${routine.id}')">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (error) { console.error(error); }
+    }
+
+    // --- 3. Add step ---
+    async function addStep(routineId) {
+        const selectBox = document.getElementById(`select-${routineId}`);
+        const brandInput = document.getElementById(`brand-${routineId}`);
+        const nameInput = document.getElementById(`name-${routineId}`);
+
+        let finalBrand = "";
+        let finalName = "";
+
+        if (brandInput.value.trim() && nameInput.value.trim()) {
+            finalBrand = brandInput.value.trim();
+            finalName = nameInput.value.trim();
+        } else if (selectBox.value) {
+            const parts = selectBox.value.split('|||');
+            finalBrand = parts[0];
+            finalName = parts[1];
+        } else {
+            alert("Please choose a catalog item or fill in the manual fields.");
+            return;
+        }
+
+        const response = await fetch(`/routines/${routineId}/add_step`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                brand: finalBrand,
+                name: finalName
+            })
+        });
+
+        if (response.ok) {
+            loadRoutines();
+        } else {
+            alert("Error adding step");
+        }
+    }
+
+    // --- 4. Create and delete ---
+    async function createRoutine() {
+        const name = document.getElementById('newRoutineName').value;
+        if (!name) return;
+        await fetch('/routines', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ name: name, user_email: userEmail })
+        });
+        document.getElementById('newRoutineName').value = '';
+        loadRoutines();
+    }
+
+    async function removeStep(rid, pname) {
+        if(!confirm('Delete this step?')) return;
+        await fetch(`/routines/${rid}/remove_step`, {
+            method: 'PUT', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ product_name: pname })
+        });
+        loadRoutines();
+    }
+
+    init();
+</script>
+{% endblock %}
